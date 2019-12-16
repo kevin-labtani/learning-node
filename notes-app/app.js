@@ -1,6 +1,6 @@
 const chalk = require("chalk");
 const yargs = require("yargs");
-const getNotes = require("./notes.js");
+const notes = require("./notes.js");
 
 // node app.js --help provided by yargs
 
@@ -8,8 +8,9 @@ const getNotes = require("./notes.js");
 yargs.version("1.1.0");
 
 // create add command
-// call with node app.js add --title="Shopping list" --body="buy soap"
+// call with node app.js add --title="some title" --body="some body"
 // builder set up option for command
+// handler called when command is run
 yargs.command({
   command: "add",
   describe: "Add a new note",
@@ -26,8 +27,7 @@ yargs.command({
     },
   },
   handler: function(argv) {
-    console.log(`Title: ${argv.title}`);
-    console.log(`Body: ${argv.body}`);
+    notes.addNote(argv.title, argv.body);
   },
 });
 
@@ -49,7 +49,7 @@ yargs.command({
   },
 });
 
-// create read command
+// create remove command
 yargs.command({
   command: "remove",
   describe: "Remove a note",
