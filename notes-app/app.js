@@ -7,7 +7,7 @@ const notes = require("./notes.js");
 // customize yargs version
 yargs.version("1.1.0");
 
-// create add command
+// add command
 // call with node app.js add --title="some title" --body="some body"
 // builder set up option for command
 // handler called when command is run
@@ -31,7 +31,7 @@ yargs.command({
   },
 });
 
-// create read command
+// read command
 yargs.command({
   command: "read",
   describe: "Read a note",
@@ -47,7 +47,7 @@ yargs.command({
   },
 });
 
-// create list command
+// list command
 yargs.command({
   command: "list",
   describe: "Listing all your notes",
@@ -56,7 +56,7 @@ yargs.command({
   },
 });
 
-// create remove command
+// remove command
 yargs.command({
   command: "remove",
   describe: "Remove a note",
