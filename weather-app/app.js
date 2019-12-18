@@ -6,12 +6,18 @@ const url =
 
 // make the request and parse it as json
 request({ url: url, json: true }, (error, response, body) => {
-  console.log(
-    `${body.daily.data[0].summary} It is currently ${
-      body.currently.temperature
-    } degrees out. There is a ${body.currently.precipProbability *
-      100}% chance of rain.`,
-  );
+  if (error) {
+    console.log("unable to connect to weather service!");
+  } else if (body.error) {
+    console.log("Unable to find location!");
+  } else {
+    console.log(
+      `${body.daily.data[0].summary} It is currently ${
+        body.currently.temperature
+      } degrees out. There is a ${body.currently.precipProbability *
+        100}% chance of rain.`,
+    );
+  }
 });
 
 // geocoding with mapbox api
@@ -20,7 +26,13 @@ const geocodeURL =
 
 // make the request and parse it as json
 request({ url: geocodeURL, json: true }, (error, response, body) => {
-  const latitude = body.features[0].center[1];
-  const longitude = body.features[0].center[0];
-  console.log(`long: ${longitude}, lat: ${latitude}`);
+  if (error) {
+    console.log("unable to connect to location services!");
+  } else if (!body.features[0]) {
+    console.log("Unable to find location. Try another search.");
+  } else {
+    const latitude = body.features[0].center[1];
+    const longitude = body.features[0].center[0];
+    console.log(`long: ${longitude}, lat: ${latitude}`);
+  }
 });
