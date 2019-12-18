@@ -1,31 +1,15 @@
+const path = require("path");
 const express = require("express");
 
 // express is a function rather than an object
 const app = express();
+
 const port = 3000;
 
-app.get("/", (req, res) => {
-  // send html
-  res.send("<h1>Weather</h1>");
-});
+// setup to serve static file
+const publicDirectoryPath = path.join(__dirname, "../public");
 
-app.get("/help", (req, res) => {
-  res.send([
-    // express auto stringify and sends json
-    {
-      name: "Kevin",
-      age: 37,
-    },
-    {
-      name: "Sarah",
-      age: 27,
-    },
-  ]);
-});
-
-app.get("/about", (req, res) => {
-  res.send("<h1>About</H1>");
-});
+app.use(express.static(publicDirectoryPath));
 
 app.get("/weather", (req, res) => {
   res.send({
