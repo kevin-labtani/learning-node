@@ -4,21 +4,34 @@ const express = require("express");
 const app = express();
 const port = 3000;
 
-// app.com is our domain
-// app.com/help
-// app.com/about
-// etc
+app.get("/", (req, res) => {
+  // send html
+  res.send("<h1>Weather</h1>");
+});
 
-app.get("/", (req, res) => res.send("Hello Express!"));
-
-app.get("/help", (req, res) => res.send("This is the help page!"));
+app.get("/help", (req, res) => {
+  res.send([
+    // express auto stringify and sends json
+    {
+      name: "Kevin",
+      age: 37,
+    },
+    {
+      name: "Sarah",
+      age: 27,
+    },
+  ]);
+});
 
 app.get("/about", (req, res) => {
-  res.send("About");
+  res.send("<h1>About</H1>");
 });
 
 app.get("/weather", (req, res) => {
-  res.send("Your weather");
+  res.send({
+    forecast: "Sunny",
+    location: "Nivelles",
+  });
 });
 
 // app is up on http://localhost:3000/
