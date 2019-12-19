@@ -1,6 +1,8 @@
 const path = require("path");
 const express = require("express");
 const hbs = require("hbs");
+const geocode = require("../utils/geocode");
+const forecast = require("../utils/forecast");
 
 // express is a function rather than an object
 const app = express();
@@ -52,10 +54,23 @@ app.get("/weather", (req, res) => {
     });
   }
 
-  res.send({
-    forecast: "Sunny",
-    location: "Nivelles",
-    address: req.query.address,
+  const address = req.query.address;
+  // chain callbacks to get weather data from address geocode
+  geocode(address, (error, { latitude, longitude, location } = {}) => {
+    if (error) {
+      return res.send({ error });
+    }
+
+    forecast(latitude, longitude, (error, forecastData) => {
+      if (error) {
+        return res.send({ error });
+      }
+      res.send({
+        forecast: forecastData,
+        location,
+        address,
+      });
+    });
   });
 });
 
