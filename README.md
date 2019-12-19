@@ -9,3 +9,7 @@ Le projet est réalisé sur base du cours [**The Complete Node.js Developer Cour
 ## Langages
 
 - Javascript
+
+## Technologies
+
+- Node.js
