@@ -4,14 +4,19 @@ const express = require("express");
 // express is a function rather than an object
 const app = express();
 
+// define default port
 const port = 3000;
 
-// setup to serve static file
+// paths for express config
 const publicDirectoryPath = path.join(__dirname, "../public");
-app.use(express.static(publicDirectoryPath));
+const viewPath = path.join(__dirname, "../templates");
 
-// set handlebars as view engine
+// setup handlebars as view engine
 app.set("view engine", "hbs");
+app.set("views", viewPath);
+
+// setup express to serve static file
+app.use(express.static(publicDirectoryPath));
 
 app.get("/", (req, res) => {
   // render our handlebars template
@@ -30,7 +35,7 @@ app.get("/about", (req, res) => {
 
 app.get("/help", (req, res) => {
   res.render("help", {
-    helpText: "This is some helpful text."
+    helpText: "This is some helpful text.",
   });
 });
 
