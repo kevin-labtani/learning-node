@@ -95,5 +95,3 @@ app.get("*", (req, res) => {
 
 // app is up on http://localhost:3000/
 app.listen(port, () => console.log(`Server is up on port ${port}!`));
-
-// start app with "nodemon src/app.js -e js,hbs"
