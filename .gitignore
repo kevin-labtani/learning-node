@@ -109,3 +109,6 @@ dist
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# MongoDB
+mongodb-data
