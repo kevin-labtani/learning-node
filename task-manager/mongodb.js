@@ -1,10 +1,15 @@
-const mongodb = require("mongodb");
-const MongoClient = mongodb.MongoClient;
+const { MongoClient, ObjectID } = require("mongodb");
+
 // start db with:
 // mongod --dbpath=/home/user/Desktop/personal-projects/mead-node/task-manager/mongodb-data
 
 const connectionURL = "mongodb://127.0.0.1:27017";
 const databaseName = "task-manager";
+
+// // generate a new MongoDB id
+// const id = new ObjectID();
+// console.log(id.id); // contains the raw binary
+// console.log(id.getTimestamp());
 
 MongoClient.connect(
   connectionURL,
@@ -23,8 +28,10 @@ MongoClient.connect(
     // // insert one document with 2 fields
     // db.collection("users").insertOne(
     //   {
-    //     name: "Kevin",
-    //     age: 37,
+    //     // if we want to specify an id
+    //     // _id: id,
+    //     name: "Vikram",
+    //     age: 23,
     //   },
     //   (error, result) => {
     //     if (error) {
@@ -55,27 +62,27 @@ MongoClient.connect(
     //   },
     // );
 
-    db.collection("tasks").insertMany(
-      [
-        {
-          description: "feed the cat",
-          completed: "true",
-        },
-        {
-          description: "go buy food",
-          completed: "false",
-        },
-        {
-          description: "clean my apartment",
-          completed: "false",
-        },
-      ],
-      (error, result) => {
-        if (error) {
-          return console.log("Unable to insert new tasks");
-        }
-        console.log(result.ops);
-      },
-    );
+    // db.collection("tasks").insertMany(
+    //   [
+    //     {
+    //       description: "feed the cat",
+    //       completed: "true",
+    //     },
+    //     {
+    //       description: "go buy food",
+    //       completed: "false",
+    //     },
+    //     {
+    //       description: "clean my apartment",
+    //       completed: "false",
+    //     },
+    //   ],
+    //   (error, result) => {
+    //     if (error) {
+    //       return console.log("Unable to insert new tasks");
+    //     }
+    //     console.log(result.ops);
+    //   },
+    // );
   },
 );
