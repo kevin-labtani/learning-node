@@ -6,11 +6,6 @@ const { MongoClient, ObjectID } = require("mongodb");
 const connectionURL = "mongodb://127.0.0.1:27017";
 const databaseName = "task-manager";
 
-// // generate a new MongoDB id
-// const id = new ObjectID();
-// console.log(id.id); // contains the raw binary
-// console.log(id.getTimestamp());
-
 MongoClient.connect(
   connectionURL,
   { useNewUrlParser: true, useUnifiedTopology: true },
@@ -19,70 +14,36 @@ MongoClient.connect(
       return console.log("Unable to connect to database");
     }
 
-    // db will be auto created by just picking a name and accessing it
     const db = client.db(databaseName);
 
-    // collection equivalent to a table in sql
-    // will be auto created when we try to access it
+    db.collection("users").findOne({ name: "Jen" }, (error, result) => {
+      if (error) {
+        return console.log("Unable to fetch");
+      }
+      // nb: return null if no document matches the search
+      // return the 1st match if there are many
+      console.log(result);
+    });
 
-    // // insert one document with 2 fields
-    // db.collection("users").insertOne(
-    //   {
-    //     // if we want to specify an id
-    //     // _id: id,
-    //     name: "Vikram",
-    //     age: 23,
-    //   },
-    //   (error, result) => {
-    //     if (error) {
-    //       return console.log("Unable to insert user");
-    //     }
-    //     // ops is an array with the documents inserted
-    //     console.log(result.ops);
-    //   },
-    // );
+    // search by id
+    db.collection("users").findOne(
+      { _id: new ObjectID("5dfca32b4f24b071dc53da7b") },
+      (error, result) => {
+        if (error) {
+          return console.log("Unable to fetch");
+        }
+        // nb: return null if no document matches the search
+        // return the 1st match if there are many
+        console.log(result);
+      },
+    );
 
-    // // insert more than one document
-    // db.collection("users").insertMany(
-    //   [
-    //     {
-    //       name: "Jen",
-    //       age: 28,
-    //     },
-    //     {
-    //       name: "Mike",
-    //       age: 30,
-    //     },
-    //   ],
-    //   (error, result) => {
-    //     if (error) {
-    //       return console.log("Unable to insert users");
-    //     }
-    //     console.log(result.ops);
-    //   },
-    // );
-
-    // db.collection("tasks").insertMany(
-    //   [
-    //     {
-    //       description: "feed the cat",
-    //       completed: "true",
-    //     },
-    //     {
-    //       description: "go buy food",
-    //       completed: "false",
-    //     },
-    //     {
-    //       description: "clean my apartment",
-    //       completed: "false",
-    //     },
-    //   ],
-    //   (error, result) => {
-    //     if (error) {
-    //       return console.log("Unable to insert new tasks");
-    //     }
-    //     console.log(result.ops);
-    //   },
-    // );
+    // search for more than one item
+    // return a Cursor
+    db.collection("tasks")
+      .find({ completed: false })
+      .toArray((error, result) => {
+        console.log(result);
+      });
   },
 );
