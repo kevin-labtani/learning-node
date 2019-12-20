@@ -16,38 +16,12 @@ MongoClient.connect(
 
     const db = client.db(databaseName);
 
-    // change the name for one of our users
+    // delete a document
     db.collection("tasks")
-      .updateMany(
-        {
-          completed: false,
-        },
-        {
-          // Sets the value of a field in a document.
-          // full list of update operators : https://docs.mongodb.com/manual/reference/operator/update/
-          $set: {
-            completed: true,
-          },
-        },
-      )
+      .deleteOne({
+        description: "go buy food",
+      })
       .then(result => console.log(result))
       .catch(error => console.log(error));
-
-    //   // increment age for one of our users
-    //   db.collection("users")
-    //     .updateOne(
-    //       {
-    //         _id: new ObjectID("5dfca32b4f24b071dc53da7b"),
-    //       },
-    //       {
-    //         // Sets the value of a field in a document.
-    //         // full list of update operators : https://docs.mongodb.com/manual/reference/operator/update/
-    //         $inc: {
-    //           age: 1,
-    //         },
-    //       },
-    //     )
-    //     .then(result => console.log(result))
-    //     .catch(error => console.log(error));
   },
 );
