@@ -19,9 +19,63 @@ MongoClient.connect(
 
     // collection equivalent to a table in sql
     // will be auto created when we try to access it
-    db.collection("users").insertOne({
-      name: "Kevin",
-      age: 37,
-    });
+
+    // // insert one document with 2 fields
+    // db.collection("users").insertOne(
+    //   {
+    //     name: "Kevin",
+    //     age: 37,
+    //   },
+    //   (error, result) => {
+    //     if (error) {
+    //       return console.log("Unable to insert user");
+    //     }
+    //     // ops is an array with the documents inserted
+    //     console.log(result.ops);
+    //   },
+    // );
+
+    // // insert more than one document
+    // db.collection("users").insertMany(
+    //   [
+    //     {
+    //       name: "Jen",
+    //       age: 28,
+    //     },
+    //     {
+    //       name: "Mike",
+    //       age: 30,
+    //     },
+    //   ],
+    //   (error, result) => {
+    //     if (error) {
+    //       return console.log("Unable to insert users");
+    //     }
+    //     console.log(result.ops);
+    //   },
+    // );
+
+    db.collection("tasks").insertMany(
+      [
+        {
+          description: "feed the cat",
+          completed: "true",
+        },
+        {
+          description: "go buy food",
+          completed: "false",
+        },
+        {
+          description: "clean my apartment",
+          completed: "false",
+        },
+      ],
+      (error, result) => {
+        if (error) {
+          return console.log("Unable to insert new tasks");
+        }
+        console.log(result.ops);
+      },
+    );
   },
 );
