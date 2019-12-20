@@ -16,34 +16,38 @@ MongoClient.connect(
 
     const db = client.db(databaseName);
 
-    db.collection("users").findOne({ name: "Jen" }, (error, result) => {
-      if (error) {
-        return console.log("Unable to fetch");
-      }
-      // nb: return null if no document matches the search
-      // return the 1st match if there are many
-      console.log(result);
-    });
-
-    // search by id
-    db.collection("users").findOne(
-      { _id: new ObjectID("5dfca32b4f24b071dc53da7b") },
-      (error, result) => {
-        if (error) {
-          return console.log("Unable to fetch");
-        }
-        // nb: return null if no document matches the search
-        // return the 1st match if there are many
-        console.log(result);
-      },
-    );
-
-    // search for more than one item
-    // return a Cursor
+    // change the name for one of our users
     db.collection("tasks")
-      .find({ completed: false })
-      .toArray((error, result) => {
-        console.log(result);
-      });
+      .updateMany(
+        {
+          completed: false,
+        },
+        {
+          // Sets the value of a field in a document.
+          // full list of update operators : https://docs.mongodb.com/manual/reference/operator/update/
+          $set: {
+            completed: true,
+          },
+        },
+      )
+      .then(result => console.log(result))
+      .catch(error => console.log(error));
+
+    //   // increment age for one of our users
+    //   db.collection("users")
+    //     .updateOne(
+    //       {
+    //         _id: new ObjectID("5dfca32b4f24b071dc53da7b"),
+    //       },
+    //       {
+    //         // Sets the value of a field in a document.
+    //         // full list of update operators : https://docs.mongodb.com/manual/reference/operator/update/
+    //         $inc: {
+    //           age: 1,
+    //         },
+    //       },
+    //     )
+    //     .then(result => console.log(result))
+    //     .catch(error => console.log(error));
   },
 );
