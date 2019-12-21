@@ -15,13 +15,5 @@ MongoClient.connect(
     }
 
     const db = client.db(databaseName);
-
-    // delete a document
-    db.collection("tasks")
-      .deleteOne({
-        description: "go buy food",
-      })
-      .then(result => console.log(result))
-      .catch(error => console.log(error));
   },
 );
