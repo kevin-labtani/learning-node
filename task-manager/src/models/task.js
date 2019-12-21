@@ -1,0 +1,16 @@
+const mongoose = require("mongoose");
+
+// create a model for our tasks
+const Task = mongoose.model("Task", {
+  description: {
+    type: String,
+    trim: true,
+    required: true,
+  },
+  completed: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+module.exports = Task;
