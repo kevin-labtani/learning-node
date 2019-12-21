@@ -25,6 +25,37 @@ app.post("/users", (req, res) => {
     });
 });
 
+// endpoint for reading users
+app.get("/users", (req, res) => {
+  User.find({})
+    .then(users => {
+      res.send(users); //array
+    })
+    .catch(e => {
+      res.status(500).send();
+    });
+});
+
+// endpoint for reading a single user
+// express route parameter used to get dynamic part of the url
+app.get("/users/:id", (req, res) => {
+  // mongoose auto convert string id into object ids
+  const _id = req.params.id;
+
+  User.findById(_id)
+    .then(user => {
+      if (!user) {
+        // not getting anything back isn't an error for mongo so we have to handle the case
+        return res.status(404).send();
+      }
+
+      res.send(user);
+    })
+    .catch(e => {
+      return res.status(500).send();
+    });
+});
+
 // endpoint to create a new task
 app.post("/tasks", (req, res) => {
   const task = new Task(req.body);
