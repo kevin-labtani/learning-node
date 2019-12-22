@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     trim: true,
     lowercase: true,
+    unique: true,
     validate(value) {
       if (!validator.isEmail(value)) {
         throw new Error("Email is invalid");
@@ -42,8 +43,25 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+// add static function findByCredentials to the user model
+userSchema.statics.findByCredentials = async (email, password) => {
+  // fetch our user by email, if they exist
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new Error("Unable to login");
+  }
+  // check if password is a match for our user
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    throw new Error("Unable to login");
+  }
+
+  return user;
+};
+
 // middleware are a way to customise the behavior of our mongoose model
 // function passed can't be an arrow fuctions as we need "this"
+// hash th eplain text password
 userSchema.pre("save", async function(next) {
   const user = this;
 

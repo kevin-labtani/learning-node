@@ -14,6 +14,20 @@ router.post("/users", async (req, res) => {
   }
 });
 
+// endpoint for user login
+router.post("/users/login", async (req, res) => {
+  try {
+    // using our own defined method
+    const user = await User.findByCredentials(
+      req.body.email,
+      req.body.password,
+    );
+    res.send(user);
+  } catch (e) {
+    res.status(400).send();
+  }
+});
+
 // endpoint for reading users
 router.get("/users", async (req, res) => {
   try {
