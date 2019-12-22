@@ -61,9 +61,12 @@ app.patch("/users/:id", async (req, res) => {
   );
 
   if (!isValidOperation) {
-    return res.status(400).send({ error: "Invalid updates!" });
+    return res.status(400).send({
+      error: "Invalid updates!",
+    });
   }
 
+  // find user to update by id, and update it
   try {
     // new will return the new, modified user rather than the one that was found before the update
     const user = await User.findByIdAndUpdate(req.params.id, req.body, {
@@ -112,6 +115,34 @@ app.get("/tasks/:id", async (req, res) => {
     res.send(task);
   } catch (e) {
     return res.status(500).send();
+  }
+});
+
+// endpoint to update a task
+app.patch("/tasks/:id", async (req, res) => {
+  // check if user is trying to update sth he can't
+  const updates = Object.keys(req.body);
+  const allowedUpdates = ["description", "completed"];
+  const isValidOperation = updates.every(update =>
+    allowedUpdates.includes(update),
+  );
+
+  if (!isValidOperation) {
+    return res.status(400).send({ error: "Invalid updates!" });
+  }
+
+  // find task to update by id, and update it
+  try {
+    const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!task) {
+      return res.status(404).send();
+    }
+    res.send(task);
+  } catch (e) {
+    res.status(400).send(e);
   }
 });
 
