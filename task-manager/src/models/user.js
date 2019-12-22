@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 // create schema for our users
 const userSchema = new mongoose.Schema({
@@ -41,9 +42,18 @@ const userSchema = new mongoose.Schema({
       }
     },
   },
+  tokens: [
+    {
+      token: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 });
 
 // add static function findByCredentials to the user model
+// statics methods are accessible on the model
 userSchema.statics.findByCredentials = async (email, password) => {
   // fetch our user by email, if they exist
   const user = await User.findOne({ email });
@@ -57,6 +67,19 @@ userSchema.statics.findByCredentials = async (email, password) => {
   }
 
   return user;
+};
+
+// add generateAuthToken() method for specific users
+// methods are accessible on the instance
+userSchema.methods.generateAuthToken = async function() {
+  const user = this;
+
+  // user._id is an object,w e convert it to a string
+  const token = jwt.sign({ _id: user._id.toString() }, "thisismysecret00");
+
+  user.tokens = user.tokens.concat({ token });
+  await user.save();
+  return token;
 };
 
 // middleware are a way to customise the behavior of our mongoose model

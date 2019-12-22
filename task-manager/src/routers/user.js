@@ -8,7 +8,9 @@ router.post("/users", async (req, res) => {
   const user = new User(req.body);
   try {
     await user.save();
-    res.status(201).send(user);
+    // generate jwt when user create account so they don't have to login again right after
+    const token = await user.generateAuthToken();
+    res.status(201).send({ user, token });
   } catch (e) {
     res.status(400).send(e);
   }
@@ -22,7 +24,9 @@ router.post("/users/login", async (req, res) => {
       req.body.email,
       req.body.password,
     );
-    res.send(user);
+    // method lives on user not User since it's specific for one user
+    const token = await user.generateAuthToken();
+    res.send({ user, token });
   } catch (e) {
     res.status(400).send();
   }
