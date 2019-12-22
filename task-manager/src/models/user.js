@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const bcrypt = require("bcryptjs");
 
-// create a model for our users
-const User = mongoose.model("User", {
+// create schema for our users
+const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -40,5 +41,20 @@ const User = mongoose.model("User", {
     },
   },
 });
+
+// middleware are a way to customise the behavior of our mongoose model
+// function passed can't be an arrow fuctions as we need "this"
+userSchema.pre("save", async function(next) {
+  const user = this;
+
+  if (user.isModified("password")) {
+    user.password = await bcrypt.hash(user.password, 8);
+  }
+
+  next();
+});
+
+// create a model for our users
+const User = mongoose.model("User", userSchema);
 
 module.exports = User;

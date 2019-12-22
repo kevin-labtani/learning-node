@@ -59,14 +59,16 @@ router.patch("/users/:id", async (req, res) => {
 
   // find user to update by id, and update it
   try {
-    // new will return the new, modified user rather than the one that was found before the update
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    // findByIdAndUpdate bypasses mongoose and perfom the operation directly on the db, not good as we need our middleware to run for pwd hashing, so we need to do it the following way:
+    const user = await User.findById(req.params.id);
+
     if (!user) {
       return res.status(404).send();
     }
+
+    updates.forEach(update => (user[update] = req.body[update]));
+    await user.save();
+
     res.send(user);
   } catch (e) {
     res.status(400).send(e);
