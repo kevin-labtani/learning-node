@@ -21,3 +21,21 @@ app.use(taskRouter);
 app.listen(port, () => {
   console.log(`Server is up on port ${port}!`);
 });
+
+// bcrypt example
+const bcrypt = require("bcryptjs");
+
+const myFunction = async () => {
+  const password = "Red1234!";
+  const hashedPassword = await bcrypt.hash(password, 8); // 8 is number of rounds (#times the hashing algo is run)
+
+  console.log(password);
+  console.log(hashedPassword);
+
+  const isMatch = await bcrypt.compare("red1234!", hashedPassword);
+  console.log(isMatch);
+};
+
+myFunction();
+// hashing algorithms are one way, can't get the pwd back
+// encryption algorithms work both way
