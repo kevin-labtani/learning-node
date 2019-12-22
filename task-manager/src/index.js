@@ -11,6 +11,19 @@ const port = process.env.PORT || 3000;
 // start db with:
 // mongod --dbpath=/home/user/Desktop/personal-projects/mead-node/task-manager/mongodb-data
 
+// express middleware
+// used to limit access
+app.use((req, res, next) => {
+  if (req.method === "GET") {
+    res.send("GET requests are disabled");
+  } else {
+    next();
+  }
+});
+// app.use((req, res, next) => {
+//   res.status(503).send("The site is under maintenance");
+// });
+
 // parse incoming json to an object
 app.use(express.json());
 
@@ -21,19 +34,3 @@ app.use(taskRouter);
 app.listen(port, () => {
   console.log(`Server is up on port ${port}!`);
 });
-
-const jwt = require("jsonwebtoken");
-
-const myFunction = async () => {
-  // provide payload, secret, expiration
-  token = jwt.sign({ _id: "abc123" }, "thisismysecret", {
-    expiresIn: "7 days",
-  });
-  console.log(token);
-
-  // return the payload for the token , if no error
-  const data = jwt.verify(token, "thisismysecret");
-  console.log(data);
-};
-
-myFunction();
