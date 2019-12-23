@@ -20,21 +20,24 @@ router.post("/tasks", auth, async (req, res) => {
 });
 
 // endpoint for reading tasks
-router.get("/tasks", async (req, res) => {
+router.get("/tasks", auth, async (req, res) => {
   try {
-    const tasks = await Task.find({});
-    res.send(tasks);
+    // const tasks = await Task.find({ owner: req.user._id });
+    // res.send(tasks);
+    // alternative:
+    await req.user.populate("tasks").execPopulate();
+    res.send(req.user.tasks);
   } catch (e) {
     res.status(500).send();
   }
 });
 
 // endpoint for reading a single task
-router.get("/tasks/:id", async (req, res) => {
+router.get("/tasks/:id", auth, async (req, res) => {
   // mongoose auto convert string id into object ids
   const _id = req.params.id;
   try {
-    const task = await Task.findById(_id);
+    const task = await Task.findOne({ _id, owner: req.user._id });
     if (!task) {
       return res.status(404).send();
     }
@@ -45,7 +48,7 @@ router.get("/tasks/:id", async (req, res) => {
 });
 
 // endpoint to update a task
-router.patch("/tasks/:id", async (req, res) => {
+router.patch("/tasks/:id", auth, async (req, res) => {
   // check if user is trying to update sth he can't
   const updates = Object.keys(req.body);
   const allowedUpdates = ["description", "completed"];
@@ -59,7 +62,10 @@ router.patch("/tasks/:id", async (req, res) => {
 
   // find task to update by id, and update it
   try {
-    const task = await Task.findById(req.params.id);
+    const task = await Task.findOne({
+      _id: req.params.id,
+      owner: req.user._id,
+    });
 
     if (!task) {
       return res.status(404).send();
@@ -75,9 +81,12 @@ router.patch("/tasks/:id", async (req, res) => {
 });
 
 // endpoint to delete a user
-router.delete("/tasks/:id", async (req, res) => {
+router.delete("/tasks/:id", auth, async (req, res) => {
   try {
-    const task = await Task.findByIdAndDelete(req.params.id);
+    const task = await Task.findOneAndDelete({
+      _id: req.params.id,
+      owner: req.user._id,
+    });
     if (!task) {
       return res.status(404).send();
     }
