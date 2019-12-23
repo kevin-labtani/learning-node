@@ -1,8 +1,14 @@
 const express = require("express");
+const multer = require("multer");
 const User = require("../models/user");
 const auth = require("../middleware/auth");
 
 const router = new express.Router();
+
+// multer dest directory
+const upload = multer({
+  dest: "avatars",
+});
 
 // endpoint to create new user
 router.post("/users", async (req, res) => {
@@ -60,6 +66,12 @@ router.post("/users/logoutAll", auth, async (req, res) => {
   } catch (e) {
     res.status(500).send();
   }
+});
+
+// endpoint for user avatar upload
+// test with postman, with a POST req, and set a body with form-data, with key: "upload" and value "link/to/img"
+router.post("/users/me/avatar", upload.single("avatar"), (req, res) => {
+  res.send(); // we get a randomly generated file name with no extension uploaded to /images
 });
 
 // endpoint for reading user profile
