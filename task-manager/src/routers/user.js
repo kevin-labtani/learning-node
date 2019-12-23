@@ -1,5 +1,6 @@
 const express = require("express");
 const multer = require("multer");
+const sharp = require("sharp");
 const User = require("../models/user");
 const auth = require("../middleware/auth");
 
@@ -129,7 +130,12 @@ router.post(
   upload.single("avatar"),
   async (req, res) => {
     // save the uploaded files as user avatar
-    req.user.avatar = req.file.buffer;
+    // use sharp to resize and convert avatars to png
+    const buffer = await sharp(req.file.buffer)
+      .resize({ width: 250, height: 250 })
+      .png()
+      .toBuffer();
+    req.user.avatar = buffer;
     await req.user.save();
     res.send();
   },
@@ -157,7 +163,7 @@ router.get("/users/:id/avatar", async (req, res) => {
     }
 
     // send response header telling wether the img is a jpeg or a png
-    res.set("Content-Type", "image/jpg");
+    res.set("Content-Type", "image/png");
     res.send(user.avatar);
   } catch (e) {
     res.status(404).send();
