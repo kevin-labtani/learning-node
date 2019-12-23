@@ -72,6 +72,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
 // add generateAuthToken() method for specific users
 // methods are accessible on the instance
 userSchema.methods.generateAuthToken = async function() {
+  // to make the functione sasier to read
   const user = this;
 
   // user._id is an object,w e convert it to a string
@@ -80,6 +81,17 @@ userSchema.methods.generateAuthToken = async function() {
   user.tokens = user.tokens.concat({ token });
   await user.save();
   return token;
+};
+
+// return a user profile without the password or tokens
+// toJSON modify the behavior of JSON.stringify called ebhind the scenes whenever a user is sent back
+userSchema.methods.toJSON = function() {
+  const user = this;
+  const userObject = user.toObject();
+
+  delete userObject.password;
+  delete userObject.tokens;
+  return userObject;
 };
 
 // middleware are a way to customise the behavior of our mongoose model
