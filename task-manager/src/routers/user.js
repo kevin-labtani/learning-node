@@ -123,7 +123,6 @@ const upload = multer({
 
 // endpoint for user avatar upload
 // test with postman, with a POST req, and set a body with form-data, with key: "upload" and value "link/to/img"
-// we can show the images in our front end with <img src="data:image/jpg;base64,binary_data_goes_here>
 router.post(
   "/users/me/avatar",
   auth,
@@ -145,6 +144,24 @@ router.delete("/users/me/avatar", auth, async (req, res) => {
   req.user.avatar = undefined;
   await req.user.save();
   res.send();
+});
+
+// endpoint to serve user avatar
+// eg: <img src="http://localhost:3000/users/5e00b659a4442a1a8c8b3a3d/avatar">
+router.get("/users/:id/avatar", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user || !user.avatar) {
+      throw new Error();
+    }
+
+    // send response header telling wether the img is a jpeg or a png
+    res.set("Content-Type", "image/jpg");
+    res.send(user.avatar);
+  } catch (e) {
+    res.status(404).send();
+  }
 });
 
 module.exports = router;
