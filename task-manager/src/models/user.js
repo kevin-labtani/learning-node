@@ -84,7 +84,7 @@ userSchema.methods.generateAuthToken = async function() {
 };
 
 // return a user profile without the password or tokens
-// toJSON modify the behavior of JSON.stringify called ebhind the scenes whenever a user is sent back
+// toJSON modify the behavior of JSON.stringify called behind the scenes whenever a user is sent back
 userSchema.methods.toJSON = function() {
   const user = this;
   const userObject = user.toObject();
