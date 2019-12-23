@@ -5,11 +5,6 @@ const auth = require("../middleware/auth");
 
 const router = new express.Router();
 
-// multer dest directory
-const upload = multer({
-  dest: "avatars",
-});
-
 // endpoint to create new user
 router.post("/users", async (req, res) => {
   const user = new User(req.body);
@@ -68,12 +63,6 @@ router.post("/users/logoutAll", auth, async (req, res) => {
   }
 });
 
-// endpoint for user avatar upload
-// test with postman, with a POST req, and set a body with form-data, with key: "upload" and value "link/to/img"
-router.post("/users/me/avatar", upload.single("avatar"), (req, res) => {
-  res.send(); // we get a randomly generated file name with no extension uploaded to /images
-});
-
 // endpoint for reading user profile
 router.get("/users/me", auth, async (req, res) => {
   res.send(req.user);
@@ -115,5 +104,36 @@ router.delete("/users/me", auth, async (req, res) => {
     res.status(500).send();
   }
 });
+
+// multer dest directory and options
+const upload = multer({
+  dest: "avatars",
+  limits: {
+    fileSize: 1000000,
+  },
+  // filter files we allow
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+      // reject the file
+      return cb(new Error("File must be a .jp(e)g or .png"));
+    }
+    // accept the file
+    cb(null, true);
+  },
+});
+
+// endpoint for user avatar upload
+// test with postman, with a POST req, and set a body with form-data, with key: "upload" and value "link/to/img"
+router.post(
+  "/users/me/avatar",
+  upload.single("avatar"),
+  (req, res) => {
+    res.send(); // we get a randomly generated file name with no extension uploaded to /images
+  },
+  // to handle our error, need to have this call signature with the 4 args
+  (error, req, res, next) => {
+    res.status(400).send({ error: error.message });
+  },
+);
 
 module.exports = router;
