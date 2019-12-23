@@ -52,6 +52,13 @@ const userSchema = new mongoose.Schema({
   ],
 });
 
+// add relationship with the task collection, allow us to get the list of tasks associated with a user
+userSchema.virtual("tasks", {
+  ref: "Task",
+  localField: "_id",
+  foreignField: "owner",
+});
+
 // add static function findByCredentials to the user model
 // statics methods are accessible on the model
 userSchema.statics.findByCredentials = async (email, password) => {

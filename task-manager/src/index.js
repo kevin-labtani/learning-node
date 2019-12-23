@@ -21,3 +21,20 @@ app.use(taskRouter);
 app.listen(port, () => {
   console.log(`Server is up on port ${port}!`);
 });
+
+// demo
+
+const main = async () => {
+  // // get a user from their task
+  // const task = await Task.findById("5e008f17d9aaab5478e4da24");
+  // // find the user associated with this task and task.owner will now become the user object rathen than jsut an id
+  // await task.populate("owner").execPopulate();
+  // console.log(task.owner);
+
+  // get tasks from a user
+  const user = await User.findById("5dffb93e855c4e1d0175b4d9");
+  await user.populate("tasks").execPopulate();
+  console.log(user.tasks);
+};
+
+main();
