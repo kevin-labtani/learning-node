@@ -23,7 +23,8 @@ const auth = async (req, res, next) => {
       throw new Error(); // will trigger catch
     }
 
-    // give the route handlers access to the user
+    // give the route handlers access to the user and the token
+    req.token = token;
     req.user = user;
     next();
   } catch (e) {
