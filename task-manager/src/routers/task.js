@@ -21,6 +21,8 @@ router.post("/tasks", auth, async (req, res) => {
 
 // endpoint for reading tasks
 // GET /tasks?completed=true
+// limit skip options for pagination
+// GET /tasks?limit=10&skip=10
 router.get("/tasks", auth, async (req, res) => {
   // 3 options: no query params, or completed=true or completed=false
   const match = {};
@@ -35,6 +37,10 @@ router.get("/tasks", auth, async (req, res) => {
       .populate({
         path: "tasks",
         match,
+        options: {
+          limit: parseInt(req.query.limit),
+          skip: parseInt(req.query.skip),
+        },
       })
       .execPopulate();
     res.send(req.user.tasks);
