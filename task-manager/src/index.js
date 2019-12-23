@@ -10,6 +10,22 @@ const port = process.env.PORT || 3000;
 const multer = require("multer");
 const upload = multer({
   dest: "images",
+  limits: {
+    fileSize: 1000000,
+  },
+  // filter files we allow
+  fileFilter(req, file, cb) {
+    // if (!file.originalname.endsWith(".pdf")) {
+    //   // reject the file
+    //   return cb(new Error("File must be a PDF"));
+    // }
+    if (!file.originalname.match(/\.(doc|docx)$/)) {
+      // reject the file
+      return cb(new Error("File must be a word document"));
+    }
+    // accept the file
+    cb(null, true);
+  },
 });
 
 // test with postman, with a POST req, and set a body with form-data, with key: "upload" and value "link/to/img"
