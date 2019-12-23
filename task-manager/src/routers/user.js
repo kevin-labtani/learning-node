@@ -107,7 +107,6 @@ router.delete("/users/me", auth, async (req, res) => {
 
 // multer dest directory and options
 const upload = multer({
-  dest: "avatars",
   limits: {
     fileSize: 1000000,
   },
@@ -118,22 +117,34 @@ const upload = multer({
       return cb(new Error("File must be a .jp(e)g or .png"));
     }
     // accept the file
-    cb(null, true);
+    cb(undefined, true);
   },
 });
 
 // endpoint for user avatar upload
 // test with postman, with a POST req, and set a body with form-data, with key: "upload" and value "link/to/img"
+// we can show the images in our front end with <img src="data:image/jpg;base64,binary_data_goes_here>
 router.post(
   "/users/me/avatar",
+  auth,
   upload.single("avatar"),
-  (req, res) => {
-    res.send(); // we get a randomly generated file name with no extension uploaded to /images
+  async (req, res) => {
+    // save the uploaded files as user avatar
+    req.user.avatar = req.file.buffer;
+    await req.user.save();
+    res.send();
   },
-  // to handle our error, need to have this call signature with the 4 args
+  // to handle our errors, need to have this call signature with the 4 args
   (error, req, res, next) => {
     res.status(400).send({ error: error.message });
   },
 );
+
+// endpoint for user avatar delete
+router.delete("/users/me/avatar", auth, async (req, res) => {
+  req.user.avatar = undefined;
+  await req.user.save();
+  res.send();
+});
 
 module.exports = router;
