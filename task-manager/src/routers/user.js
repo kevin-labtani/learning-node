@@ -26,7 +26,6 @@ router.post("/users", async (req, res) => {
 // endpoint for user login
 router.post("/users/login", async (req, res) => {
   try {
-    the;
     // using our own defined method
     const user = await User.findByCredentials(
       req.body.email,

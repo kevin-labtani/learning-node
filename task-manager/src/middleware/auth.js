@@ -12,7 +12,7 @@ const User = require("../models/user");
 const auth = async (req, res, next) => {
   try {
     const token = req.header("Authorization").replace("Bearer ", "");
-    const decoded = jwt.verify(token, "thisismysecret00");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     // find the user with the correct id and who has that auth token still stored
     const user = await User.findOne({
       _id: decoded._id,
