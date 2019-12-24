@@ -3,6 +3,7 @@ const multer = require("multer");
 const sharp = require("sharp");
 const User = require("../models/user");
 const auth = require("../middleware/auth");
+const { sendWelcomeEmail, sendCancelationEmail } = require("../emails/account");
 
 const router = new express.Router();
 
@@ -11,6 +12,9 @@ router.post("/users", async (req, res) => {
   const user = new User(req.body);
   try {
     await user.save();
+    // use sendgrid to send a welcome email
+    // returns a promise but no need to await as we don' tneed node to do sth after the user has gotten his email
+    sendWelcomeEmail(user.email, user.name);
     // generate jwt when user create account so they don't have to login again right after
     const token = await user.generateAuthToken();
     res.status(201).send({ user, token });
@@ -22,6 +26,7 @@ router.post("/users", async (req, res) => {
 // endpoint for user login
 router.post("/users/login", async (req, res) => {
   try {
+    the;
     // using our own defined method
     const user = await User.findByCredentials(
       req.body.email,
@@ -99,7 +104,8 @@ router.patch("/users/me", auth, async (req, res) => {
 router.delete("/users/me", auth, async (req, res) => {
   try {
     await req.user.remove();
-
+    // use sendgrid to send a goodbye email
+    sendCancelationEmail(req.user.email, req.user.name);
     res.send(req.user);
   } catch (e) {
     res.status(500).send();
