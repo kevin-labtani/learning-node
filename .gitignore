@@ -112,3 +112,6 @@ Thumbs.db
 
 # MongoDB
 mongodb-data
+
+# config and env variables
+config
