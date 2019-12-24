@@ -69,7 +69,7 @@ test("Should not login nonexistent user", async () => {
   await request(app)
     .post("/users/login")
     .send({
-      email: userOne.email,
+      email: "test@test.com",
       password: "thisisnotmypass",
     })
     .expect(400);
@@ -100,7 +100,7 @@ test("Should delete account for user", async () => {
   expect(user).toBeNull();
 });
 
-test("Should not delete account for unauthenticate user", async () => {
+test("Should not delete account for unauthenticated user", async () => {
   await request(app)
     .delete("/users/me")
     .send()
