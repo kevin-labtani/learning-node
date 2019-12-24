@@ -4,14 +4,14 @@ const mongoose = require("mongoose");
 const app = require("../src/app");
 const User = require("../src/models/user");
 
+// setup a test user
 // create an id for our test user so we can use it to generate a jwt fo rtesting purpose
 const userOneId = new mongoose.Types.ObjectId();
-// setup a test user
 const userOne = {
   _id: userOneId,
   name: "Mike",
   email: "mike@example.com",
-  password: "duty5689!",
+  password: "56what!!",
   tokens: [
     {
       token: jwt.sign({ _id: userOneId }, process.env.JWT_SECRET),
@@ -21,44 +21,61 @@ const userOne = {
 
 // Jest env setup
 beforeEach(async () => {
-  // delete all users
   await User.deleteMany();
-  // add a user for testing purpose
   await new User(userOne).save();
 });
 
 test("Should signup a new user", async () => {
-  await request(app)
+  const response = await request(app)
     .post("/users")
     .send({
-      name: "Test Subject",
-      email: "test@example.com",
-      password: "MyPas777!",
+      name: "Kevin",
+      email: "kevin@example.com",
+      password: "MyPass777!",
     })
     .expect(201);
+
+  // Assert that the database was changed correctly
+  const user = await User.findById(response.body.user._id);
+  expect(user).not.toBeNull();
+
+  // Assertions about the response
+  expect(response.body).toMatchObject({
+    user: {
+      name: "Kevin",
+      email: "kevin@example.com",
+    },
+    token: user.tokens[0].token,
+  });
+
+  // assert the password isn't stored in plaintext
+  expect(user.password).not.toBe("MyPass777!");
 });
 
 test("Should login existing user", async () => {
-  await request(app)
+  const response = await request(app)
     .post("/users/login")
     .send({
       email: userOne.email,
       password: userOne.password,
     })
     .expect(200);
+  const user = await User.findById(userOneId);
+  // check for new token
+  expect(response.body.token).toBe(user.tokens[1].token);
 });
 
-test("Should not login nonexistant user", async () => {
+test("Should not login nonexistent user", async () => {
   await request(app)
     .post("/users/login")
     .send({
-      email: "test@test.com",
-      password: "somepassword",
+      email: userOne.email,
+      password: "thisisnotmypass",
     })
     .expect(400);
 });
 
-test("Sould get profile for user", async () => {
+test("Should get profile for user", async () => {
   await request(app)
     .get("/users/me")
     .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
@@ -66,22 +83,24 @@ test("Sould get profile for user", async () => {
     .expect(200);
 });
 
-test("Sould not get profile for unauthenticated user", async () => {
+test("Should not get profile for unauthenticated user", async () => {
   await request(app)
     .get("/users/me")
     .send()
     .expect(401);
 });
 
-test("Sould delete account for user", async () => {
+test("Should delete account for user", async () => {
   await request(app)
     .delete("/users/me")
     .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
     .send()
     .expect(200);
+  const user = await User.findById(userOneId);
+  expect(user).toBeNull();
 });
 
-test("Sould not not delete account for unauthenticated user", async () => {
+test("Should not delete account for unauthenticate user", async () => {
   await request(app)
     .delete("/users/me")
     .send()
