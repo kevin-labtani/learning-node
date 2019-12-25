@@ -29,6 +29,14 @@ io.on("connection", socket => {
     // send msg to everyone
     io.emit("message", message);
   });
+  // listen for client location
+  socket.on("sendLocation", coords => {
+    // send msg to everyone
+    io.emit(
+      "message",
+      `https://google.com/maps?q=${coords.latitude},${coords.longitude}`,
+    );
+  });
 
   // send msg on disconnect
   socket.on("disconnect", () => {
