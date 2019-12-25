@@ -10,6 +10,9 @@ const messages = document.querySelector("#messages");
 
 // templates
 const messageTemplate = document.querySelector("#message-template").innerHTML;
+const locationMessageTemplate = document.querySelector(
+  "#location-message-template",
+).innerHTML;
 
 // get message from server
 socket.on("message", message => {
@@ -17,6 +20,15 @@ socket.on("message", message => {
   // setup mustache template to print the messages
   const html = Mustache.render(messageTemplate, {
     message,
+  });
+  messages.insertAdjacentHTML("beforeend", html);
+});
+
+// get locationMessage from server
+socket.on("locationMessage", url => {
+  console.log(url);
+  const html = Mustache.render(locationMessageTemplate, {
+    url,
   });
   messages.insertAdjacentHTML("beforeend", html);
 });

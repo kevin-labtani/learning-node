@@ -38,15 +38,16 @@ io.on("connection", socket => {
     // acknowlegement message was send
     callback();
   });
+
   // listen for client location
   socket.on("sendLocation", (coords, callback) => {
     // send msg to everyone
     io.emit(
-      "message",
+      "locationMessage",
       `https://google.com/maps?q=${coords.latitude},${coords.longitude}`,
     );
-      // acknoledgement location was shared
-    callback()
+    // acknoledgement location was shared
+    callback();
   });
 
   // send msg on disconnect
