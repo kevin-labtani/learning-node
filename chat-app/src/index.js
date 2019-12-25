@@ -16,8 +16,23 @@ const port = process.env.PORT;
 const publicDirectoryPath = path.join(__dirname, "../public");
 app.use(express.static(publicDirectoryPath));
 
-io.on("connection", () => {
+// socket.io example
+let count = 0;
+
+io.on("connection", socket => {
   console.log("new WebSocket connection");
+
+  // send an event to client
+  socket.emit("countUpdated", count);
+
+  // listen to client event
+  socket.on("increment", () => {
+    count++;
+
+    // socket.emit send an event to a single connection
+    // io.emit send an avent to all active connections
+    io.emit("countUpdated", count);
+  });
 });
 
 // app is up on http://localhost:3000/
