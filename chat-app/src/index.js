@@ -16,22 +16,15 @@ const port = process.env.PORT;
 const publicDirectoryPath = path.join(__dirname, "../public");
 app.use(express.static(publicDirectoryPath));
 
-// socket.io example
-let count = 0;
-
 io.on("connection", socket => {
   console.log("new WebSocket connection");
 
-  // send an event to client
-  socket.emit("countUpdated", count);
+  // send welcome msg to client
+  socket.emit("message", "Welcome to my chat app");
 
-  // listen to client event
-  socket.on("increment", () => {
-    count++;
-
-    // socket.emit send an event to a single connection
-    // io.emit send an avent to all active connections
-    io.emit("countUpdated", count);
+  // listen for client msg
+  socket.on("sendMessage", message => {
+    io.emit("message", message);
   });
 });
 
