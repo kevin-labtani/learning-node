@@ -21,10 +21,18 @@ io.on("connection", socket => {
 
   // send welcome msg to client
   socket.emit("message", "Welcome to my chat app");
+  // send to everybody except the client emiting
+  socket.broadcast.emit("message", "A new user has joined");
 
   // listen for client msg
   socket.on("sendMessage", message => {
+    // send msg to everyone
     io.emit("message", message);
+  });
+
+  // send msg on disconnect
+  socket.on("disconnect", () => {
+    io.emit("message", "A user has left!");
   });
 });
 
