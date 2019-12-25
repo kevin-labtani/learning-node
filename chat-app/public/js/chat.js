@@ -6,10 +6,19 @@ const messageForm = document.querySelector("#message-form");
 const messageFormInput = messageForm.querySelector("input");
 const messageFormButton = messageForm.querySelector("button");
 const locationButton = document.querySelector("#send-location");
+const messages = document.querySelector("#messages");
+
+// templates
+const messageTemplate = document.querySelector("#message-template").innerHTML;
 
 // get message from server
 socket.on("message", message => {
   console.log(message);
+  // setup mustache template to print the messages
+  const html = Mustache.render(messageTemplate, {
+    message,
+  });
+  messages.insertAdjacentHTML("beforeend", html);
 });
 
 // send message to server
