@@ -20,6 +20,33 @@ const { username, room } = Qs.parse(location.search, {
   ignoreQueryPrefix: true,
 });
 
+// scroll user to bottom if he was already at the bottom
+// won't scrol user down if he's looking up in the last at some old messages
+const autoscroll = () => {
+  // get new message
+  const newMessage = messages.lastElementChild;
+
+  // get height of new message  = offset height + margin
+  const newMessageStyles = getComputedStyle(newMessage);
+  const newMessageMargin = parseInt(newMessageStyles.marginBottom);
+  const newMessageHeight = newMessage.offsetHeight + newMessageMargin;
+
+  // visible height
+  const visibleHeight = messages.offsetHeight;
+
+  // height of messages container
+  const containerHeight = messages.scrollHeight;
+
+  // how far are we scrolled in
+  const scrollOffset = messages.scrollTop + visibleHeight;
+
+  // check if we're at the bottom before the last message was added
+  if (containerHeight - newMessageHeight <= scrollOffset) {
+    // push to the bottom
+    messages.scrollTop = messages.scrollHeight;
+  }
+};
+
 // get message from server
 socket.on("message", message => {
   // setup mustache template to print the messages
@@ -29,6 +56,7 @@ socket.on("message", message => {
     createdAt: moment(message.createdAt).format("h:mm a"),
   });
   messages.insertAdjacentHTML("beforeend", html);
+  autoscroll();
 });
 
 // get locationMessage from server
@@ -39,6 +67,7 @@ socket.on("locationMessage", message => {
     createdAt: moment(message.createdAt).format("h:mm a"),
   });
   messages.insertAdjacentHTML("beforeend", html);
+  autoscroll();
 });
 
 // get room data
