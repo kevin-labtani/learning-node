@@ -21,13 +21,23 @@ const port = process.env.PORT;
 const publicDirectoryPath = path.join(__dirname, "../public");
 app.use(express.static(publicDirectoryPath));
 
+// socket.emit send message to  client
+// socket.broadcast.emit sends message to everybody except client
+// io.emit sends message to everybody
+// io.to.emit emits an event to everybody in a specific room
+// socket.broadcast.to.emit emits an event to everybody in a specific room except for the client
 io.on("connection", socket => {
   console.log("new WebSocket connection");
 
-  // send welcome msg to client
-  socket.emit("message", generateMessage("Welcome to my chat app"));
-  // send to everybody except the client emiting
-  socket.broadcast.emit("message", generateMessage("A new user has joined!"));
+  // join user to "room" as "username"
+  socket.on("join", ({ username, room }) => {
+    socket.join(room);
+
+    socket.emit("message", generateMessage("Welcome to my chat app"));
+    socket.broadcast
+      .to(room)
+      .emit("message", generateMessage(`${username} has joined!`));
+  });
 
   // listen for client msg
   socket.on("sendMessage", (message, callback) => {
@@ -37,8 +47,7 @@ io.on("connection", socket => {
     if (filter.isProfane(message)) {
       return callback(generateMessage("Profanity is not allowed"));
     }
-    // send msg to everyone
-    io.emit("message", generateMessage(message));
+    io.to("1").emit("message", generateMessage(message));
     // acknowlegement message was send
     callback();
   });
