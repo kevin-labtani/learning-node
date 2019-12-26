@@ -46,33 +46,43 @@ io.on("connection", socket => {
     // user.room is trimmed and lowercase version of room
     socket.join(user.room);
 
-    socket.emit("message", generateMessage("Welcome!"));
+    socket.emit("message", generateMessage("Admin", "Welcome!"));
     socket.broadcast
       .to(user.room)
-      .emit("message", generateMessage(`${user.username} has joined!`));
+      .emit(
+        "message",
+        generateMessage("Admin", `${user.username} has joined!`),
+      );
     // acknowledge connection
     callback();
   });
 
   // listen for client msg
   socket.on("sendMessage", (message, callback) => {
+    // get user so we send msg to correct room
+    const user = getUser(socket.id);
+
     // init bad words filter
     const filter = new Filter();
     // don't send the message if it contains profanity
     if (filter.isProfane(message)) {
-      return callback(generateMessage("Profanity is not allowed"));
+      return callback("Profanity is not allowed");
     }
-    io.to("1").emit("message", generateMessage(message));
+
+    io.to(user.room).emit("message", generateMessage(user.username, message));
     // acknowlegement message was send
     callback();
   });
 
   // listen for client location
   socket.on("sendLocation", (coords, callback) => {
-    // send msg to everyone
-    io.emit(
+    // get user so we send msg to correct room
+    const user = getUser(socket.id);
+
+    io.to(user.room).emit(
       "locationMessage",
       generateLocationMessage(
+        user.username,
         `https://google.com/maps?q=${coords.latitude},${coords.longitude}`,
       ),
     );
@@ -87,7 +97,7 @@ io.on("connection", socket => {
     if (user) {
       io.to(user.room).emit(
         "message",
-        generateMessage(`${user.username} has left!`),
+        generateMessage("Admin", `${user.username} has left!`),
       );
     }
   });
