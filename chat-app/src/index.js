@@ -45,14 +45,20 @@ io.on("connection", socket => {
     }
     // user.room is trimmed and lowercase version of room
     socket.join(user.room);
-
+    // send welcome message to user
     socket.emit("message", generateMessage("Admin", "Welcome!"));
+    // notify all exisitn users of new user join
     socket.broadcast
       .to(user.room)
       .emit(
         "message",
         generateMessage("Admin", `${user.username} has joined!`),
       );
+    // send room name and user list
+    io.to(user.room).emit("roomData", {
+      room: user.room,
+      users: getUsersInRoom(user.room),
+    });
     // acknowledge connection
     callback();
   });
@@ -95,10 +101,16 @@ io.on("connection", socket => {
     const user = removeUser(socket.id);
 
     if (user) {
+      // inform room user has left
       io.to(user.room).emit(
         "message",
         generateMessage("Admin", `${user.username} has left!`),
       );
+      // send updated room name and user list
+      io.to(user.room).emit("roomData", {
+        room: user.room,
+        users: getUsersInRoom(user.room),
+      });
     }
   });
 });
